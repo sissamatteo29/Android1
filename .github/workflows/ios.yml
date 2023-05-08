@@ -1,0 +1,37 @@
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      # Checkout your code
+      - uses: actions/checkout@v2
+
+      # Make sure the latest GraalVM is installed.
+      # after this step env.JAVA_HOME and env.GRAALVM_HOME will point to the GraalVM location
+      - name: Setup GraalVM built by Gluon
+        uses: gluonhq/setup-graalvm@master
+        # set GITHUB_TOKEN to avoid exceeding GitHub's API rate limit
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build your project using Maven
+      # The ios profile is used, which means a native build will be created for the gluonfx target ios.
+      - name: Gluon Build
+        run: mvn -Pios gluonfx:build gluonfx:package
+
+      # Create staging directory in which the apk will be copied
+      - name: Make staging directory
+        run: mkdir staging
+
+      # Copy the apk to the staging directory
+      - name: Copy native images to staging
+        run: cp -r target/gluonfx/arm64-ios/*.ipa staging
+
+      # Upload the staging directoy as a build artifact
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: Package
+          path: staging
