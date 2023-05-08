@@ -19,7 +19,7 @@ jobs:
       # Build your project using Maven
       # The ios profile is used, which means a native build will be created for the gluonfx target ios.
       - name: Gluon Build
-        run: mvn -Pios gluonfx:build gluonfx:package
+        run: ./mvnw -Pios gluonfx:build gluonfx:package
 
       # Create staging directory in which the apk will be copied
       - name: Make staging directory
