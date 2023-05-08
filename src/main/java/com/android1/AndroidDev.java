@@ -23,7 +23,6 @@ public class AndroidDev extends Application {
 
     @Override
     public void init() {
-        appManager.addViewFactory(HOME_VIEW, BasicView::new);
     }
 
     @Override
